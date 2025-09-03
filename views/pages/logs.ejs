@@ -1,19 +1,22 @@
-<div class="cardx p-3">
-  <h5>Log Pengiriman</h5>
-  <div class="table-responsive mt-2">
-    <table class="table table-dark table-striped">
-      <thead><tr><th>Nomor</th><th>Type</th><th>Status</th><th>Error</th><th>Waktu</th></tr></thead>
-      <tbody>
-        <% logs.forEach(l => { %>
-          <tr>
-            <td><%= l.number %></td>
-            <td><%= l.type %></td>
-            <td><%= l.status %></td>
-            <td><%= l.error || '-' %></td>
-            <td><%= l.created_at %></td>
-          </tr>
-        <% }) %>
-      </tbody>
-    </table>
-  </div>
+<div class="cardx">
+  <h3>Logs</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>No</th><th>Number</th><th>Type</th><th>Status</th><th>Error</th><th>Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% logs.forEach((log,i)=>{ %>
+      <tr>
+        <td><%= i+1 %></td>
+        <td><%= log.number %></td>
+        <td><%= log.type %></td>
+        <td><%= log.status %></td>
+        <td><%= log.error || "" %></td>
+        <td><%= log.created_at %></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
 </div>
