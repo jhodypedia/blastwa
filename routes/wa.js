@@ -1,6 +1,6 @@
 // routes/wa.js
 const express = require("express");
-const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason } = require("baileys");
 const qrcode = require("qrcode");
 const fs = require("fs");
 const path = require("path");
