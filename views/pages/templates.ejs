@@ -1,0 +1,26 @@
+<div class="cardx p-3 mb-3">
+  <h5>Tambah Template</h5>
+  <form id="tplForm">
+    <input id="tplName" class="form-control mb-2" placeholder="Nama template" required/>
+    <textarea id="tplContent" class="form-control mb-2" rows="3" placeholder="Isi template" required></textarea>
+    <button class="btnx">Simpan</button>
+  </form>
+</div>
+
+<div class="cardx p-3">
+  <h5>Daftar Template</h5>
+  <div id="tplList" class="mt-2"></div>
+</div>
+
+<script>
+async function loadTemplates(){
+  const r = await fetch('/wa/templates'); // page rendering provided list, but we also expose API
+}
+$("#tplForm").on("submit", async function(e){
+  e.preventDefault();
+  const name = $("#tplName").val(), content = $("#tplContent").val();
+  const r = await fetch('/wa/templates', { method:'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, content }) });
+  const d = await r.json();
+  if (d.id) { Swal.fire("Simpan","Template tersimpan","success"); location.reload(); }
+});
+</script>
