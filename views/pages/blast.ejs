@@ -1,74 +1,26 @@
-<div class="cardx p-3">
-  <form id="blastForm" enctype="multipart/form-data">
-    <div class="mb-2">
-      <label class="small-muted">Nomor (pisah koma) atau upload .txt (1 nomor per baris)</label>
-      <textarea id="numbers" name="numbers" class="form-control" rows="2"></textarea>
-      <input type="file" name="numbersFile" id="numbersFile" class="form-control mt-2" accept=".txt,.csv"/>
-    </div>
+<div class="cardx">
+  <form id="blast-form" enctype="multipart/form-data">
+    <label>Nomor Tujuan</label>
+    <textarea name="numbers" rows="3" placeholder="08123...,08124..."></textarea>
+    <input type="file" name="numbersFile">
 
-    <div class="mb-2">
-      <label class="small-muted">Pilih Template</label>
-      <select id="templateSelect" class="form-select mb-2">
-        <option value="">-- pilih template --</option>
-        <% templates.forEach(t => { %>
-          <option value="<%= t.content %>"><%= t.name %></option>
-        <% }) %>
-      </select>
-    </div>
+    <label>Jenis Pesan</label>
+    <select name="type">
+      <option value="text">Text</option>
+      <option value="media">Media</option>
+    </select>
 
-    <div class="mb-2">
-      <label class="small-muted">Pesan</label>
-      <textarea id="text" name="text" class="form-control" rows="4"></textarea>
-    </div>
+    <label>Isi Pesan</label>
+    <textarea name="text" rows="4"></textarea>
 
-    <div class="mb-2">
-      <label class="small-muted">Upload Media (opsional)</label>
-      <input type="file" name="media" id="media" class="form-control" accept=".jpg,.jpeg,.png,.mp4,.pdf"/>
-    </div>
+    <label>Media (opsional)</label>
+    <input type="file" name="media">
 
-    <div class="d-flex gap-2">
-      <button class="btnx" id="sendBtn" type="submit"><i class="fa fa-paper-plane"></i> Kirim Blast</button>
-      <button class="btn btn-danger" id="cancelBtn" type="button"><i class="fa fa-ban"></i> Batalkan</button>
-    </div>
-
-    <div class="progress mt-3" id="blastProgressWrap" style="height:22px; display:none;">
-      <div id="blastProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:0%">0%</div>
-    </div>
+    <button type="submit"><i class="fas fa-paper-plane"></i> Kirim</button>
+    <button type="button" id="cancel-blast" class="danger"><i class="fas fa-ban"></i> Cancel</button>
   </form>
+
+  <div class="progress-box">
+    <p>Progress: <span id="progress-text">0/0</span></p>
+  </div>
 </div>
-
-<script>
-$("#templateSelect").on("change", ()=> $("#text").val($("#templateSelect").val()));
-
-let evtSource;
-$("#blastForm").on("submit", async function(e){
-  e.preventDefault();
-  const fd = new FormData(this);
-  try {
-    Swal.fire({title:'Mengirim...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
-    $("#blastProgressWrap").show(); $("#blastProgress").css("width","0%").text("0%");
-    evtSource = new EventSource('/wa/progress');
-    evtSource.onmessage = (ev) => {
-      const data = JSON.parse(ev.data);
-      if (data.total > 0) {
-        const pct = Math.round((data.sent/data.total)*100);
-        $("#blastProgress").css("width", pct + "%").text(`${data.sent}/${data.total} (${pct}%)`);
-        if (data.sent >= data.total) { evtSource.close(); }
-      }
-    };
-    const r = await fetch('/wa/blast', { method:'POST', body: fd });
-    const d = await r.json();
-    Swal.close();
-    if (d.success) { Swal.fire("Sukses","Blast selesai","success"); }
-    else Swal.fire("Gagal", d.error || "Error", "error");
-  } catch (err) {
-    Swal.close(); Swal.fire("Error", err.message || "Error", "error");
-  }
-});
-
-$("#cancelBtn").on("click", async ()=>{
-  await fetch('/wa/cancel', { method: 'POST' });
-  Swal.fire("Dibatalkan","Permintaan batal telah dikirim","warning");
-  if (evtSource) evtSource.close();
-});
-</script>
