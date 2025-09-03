@@ -1,0 +1,29 @@
+<div class="cardx p-3">
+  <h5>Setup WhatsApp</h5>
+  <div class="qr-wrap mt-3 text-center">
+    <img id="qrImg" class="qr-img" src="" alt="QR"/>
+  </div>
+  <div class="mt-3"><span id="connBadge" class="small-muted">Checking...</span></div>
+</div>
+
+<script>
+async function pollQR(){
+  try {
+    const r = await fetch('/wa/qr');
+    const j = await r.json();
+    if (j.qr) {
+      $("#qrImg").attr("src", j.qr);
+      $("#connBadge").text("Belum terhubung").removeClass().addClass("small-muted text-danger");
+    } else if (j.connected) {
+      $("#qrImg").attr("src", "");
+      $("#qrImg").replaceWith('<div class="text-success">Sudah terhubung ✅</div>');
+      $("#connBadge").text("Terhubung").removeClass().addClass("small-muted text-success");
+    } else {
+      $("#connBadge").text("Server/WA tidak tersedia").removeClass().addClass("small-muted text-danger");
+    }
+  } catch (e) {
+    $("#connBadge").text("Error").removeClass().addClass("small-muted text-danger");
+  }
+}
+setInterval(pollQR, 2000); pollQR();
+</script>
